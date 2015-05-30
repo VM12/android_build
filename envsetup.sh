@@ -1700,14 +1700,6 @@ function cafremote()
     echo "Remote 'caf' created"
 }
 
-<<<<<<< HEAD
-function cmremote()
-{
-    git remote rm cm 2> /dev/null
-    if [ ! -d .git ]
-    then
-        echo .git directory not found. Please run this from the root directory of the Android repository you wish to set up.
-=======
 function installboot()
 {
     if [ ! -e "$OUT/recovery/root/etc/recovery.fstab" ];
@@ -1723,15 +1715,21 @@ function installboot()
     PARTITION=`grep "^\/boot" $OUT/recovery/root/etc/recovery.fstab | awk {'print $3'}`
     if [ -z "$PARTITION" ];
     then
-        echo "Unable to determine boot partition."
-        return 1
+        # Try for RECOVERY_FSTAB_VERSION = 2
+        PARTITION=`grep "[[:space:]]\/boot[[:space:]]" $OUT/recovery/root/etc/recovery.fstab | awk {'print $1'}`
+        PARTITION_TYPE=`grep "[[:space:]]\/boot[[:space:]]" $OUT/recovery/root/etc/recovery.fstab | awk {'print $3'}`
+        if [ -z "$PARTITION" ];
+        then
+            echo "Unable to determine boot partition."
+            return 1
+        fi
     fi
     adb start-server
+    adb wait-for-online
     adb root
     sleep 1
-    adb wait-for-device
-    adb remount
-    adb wait-for-device
+    adb wait-for-online shell mount /system 2>&1 > /dev/null
+    adb wait-for-online remount
     if (adb shell cat /system/build.prop | grep -q "ro.cm.device=$CM_BUILD");
     then
         adb push $OUT/boot.img /cache/
@@ -1762,15 +1760,21 @@ function installrecovery()
     PARTITION=`grep "^\/recovery" $OUT/recovery/root/etc/recovery.fstab | awk {'print $3'}`
     if [ -z "$PARTITION" ];
     then
-        echo "Unable to determine recovery partition."
-        return 1
+        # Try for RECOVERY_FSTAB_VERSION = 2
+        PARTITION=`grep "[[:space:]]\/recovery[[:space:]]" $OUT/recovery/root/etc/recovery.fstab | awk {'print $1'}`
+        PARTITION_TYPE=`grep "[[:space:]]\/recovery[[:space:]]" $OUT/recovery/root/etc/recovery.fstab | awk {'print $3'}`
+        if [ -z "$PARTITION" ];
+        then
+            echo "Unable to determine recovery partition."
+            return 1
+        fi
     fi
     adb start-server
+    adb wait-for-online
     adb root
     sleep 1
-    adb wait-for-device
-    adb remount
-    adb wait-for-device
+    adb wait-for-online shell mount /system 2>&1 >> /dev/null
+    adb wait-for-online remount
     if (adb shell cat /system/build.prop | grep -q "ro.cm.device=$CM_BUILD");
     then
         adb push $OUT/recovery.img /cache/
@@ -1807,7 +1811,6 @@ function cmgerrit() {
     if [ $# -eq 0 ]; then
         $FUNCNAME help
         return 1
->>>>>>> f8374f7... build: Add "installboot" command to install boot images
     fi
     PROJECT=`pwd -P | sed s#$ANDROID_BUILD_TOP/##g`
     PFX="android_$(echo $PROJECT | sed 's/\//_/g')"
