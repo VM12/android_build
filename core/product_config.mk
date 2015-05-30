@@ -181,7 +181,7 @@ include $(BUILD_SYSTEM)/device.mk
 
 # A CM build needs only the CM product makefiles.
 ifneq ($(VM12_BUILD),)
-  all_product_configs := $(shell ls device/*/$(CM_BUILD)/cm.mk)
+  all_product_configs := $(shell ls vendor/vm12/products/${VM12_BUILD}.mk)
 else
   ifneq ($(strip $(TARGET_BUILD_APPS)),)
   # An unbundled app build needs only the core product makefiles.
