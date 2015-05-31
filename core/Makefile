@@ -1694,9 +1694,9 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 
 VM12_TARGET_PACKAGE := $(PRODUCT_OUT)/[TN]-$(VM12_VERSION).zip
 
-.PHONY: otapackage bacon
+.PHONY: otapackage vm12
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
-bacon: otapackage
+vm12: otapackage
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(VM12_TARGET_PACKAGE)
 	$(hide) $(MD5SUM) $(VM12_TARGET_PACKAGE) > $(VM12_TARGET_PACKAGE).md5sum
 	@echo -e ${CL_CYN}"Package Complete: $(VM12_TARGET_PACKAGE)"${CL_RST}
